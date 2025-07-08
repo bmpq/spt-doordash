@@ -5,11 +5,15 @@
     <AssemblyName>doordash</AssemblyName>
     <LangVersion>latest</LangVersion>
     <Version>1.0.0</Version>
+    <Timestamp>$([System.DateTime]::Now.ToString('yyyyMMdd_HHmmss'))</Timestamp>
   </PropertyGroup>
 
   <PropertyGroup>
     <SPTPath>E:\Games\SPT_3.11</SPTPath>
     <RootNamespace>tarkin.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+    <ModExportPath>$(SPTPath)\BepInEx\plugins\tarkin</ModExportPath>
+    <DistFilename>$(AssemblyName)-$(Version)</DistFilename>
+    <DistPath>dist\$(DistFilename)\BepInEx\plugins\tarkin</DistPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -48,6 +52,17 @@
   </ItemGroup>
 
   <Target Name="CopyDllAfterBuild" AfterTargets="Build">
-    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(SPTPath)\BepInEx\plugins\tarkin" />
+    <ItemGroup>
+      <DeployFiles Include="$(OutputPath)$(AssemblyName).dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DeployFiles)" DestinationFolder="$(ModExportPath)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(DeployFiles)" DestinationFolder="$(DistPath)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="Zip" AfterTargets="Build">
+    <ItemGroup>
+      <ZipFiles Include="dist\$(DistFilename)\BepInEx" />
+    </ItemGroup>
+    <Exec Command="PowerShell -command Compress-Archive @(ZipFiles, ',') dist\$(DistFilename)_$(Timestamp).zip" />
   </Target>
 </Project>
