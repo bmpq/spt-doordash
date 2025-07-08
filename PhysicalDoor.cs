@@ -110,6 +110,16 @@ namespace tarkin.doordash
             trigger.center = box.center;
             trigger.isTrigger = true;
             colListener = colDamager.AddComponent<PlayerDamager>();
+
+            PlayBreachSound();
+        }
+
+        void PlayBreachSound()
+        {
+            if (door.BreachSound != null)
+            {
+                door.PlaySoundAtPoint(door.GetSoundPos(), door.BreachSound, BetterAudio.AudioSourceGroupType.InteractiveObjects, 60, 1f);
+            }
         }
 
         // restore everything. used only for debugging for now.
