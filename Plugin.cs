@@ -37,7 +37,7 @@ namespace tarkin.doordash
         {
             Enabled = Config.Bind("", "Enabled", true);
 
-            VelocityThresholdSqr = Config.Bind("Sprint Ram", "Velocity Threshold", 1200f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
+            VelocityThresholdSqr = Config.Bind("Sprint Ram", "Velocity Threshold", 20f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
             RayDistance = Config.Bind("Sprint Ram", "Ray Distance", 0.7f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
 
             DislodgeChance = Config.Bind("Physical Door", "Chance To Dislodge On Breach", 0.01f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));

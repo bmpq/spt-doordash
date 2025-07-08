@@ -25,7 +25,11 @@ namespace tarkin.doordash
 
         private void CheckForRam()
         {
-            if (player.Velocity.sqrMagnitude / Time.deltaTime < Plugin.VelocityThresholdSqr.Value)
+            if (Time.timeScale == 0f)
+                return;
+
+            float effectiveThresholdSqr = Plugin.VelocityThresholdSqr.Value * (Time.timeScale * Time.timeScale);
+            if (player.Velocity.sqrMagnitude < effectiveThresholdSqr)
                 return;
 
             Door door = GetBreachableDoorInFrontOfPlayer(new Vector3(0.1f, 1.4f, 0f));
