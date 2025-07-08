@@ -71,6 +71,8 @@ namespace tarkin.doordash
             door.SetUser(player);
             door.Interact(new InteractionResult(EInteractionType.Breach));
             player.ProceduralWeaponAnimation.ForceReact.AddForce(1, 4, 2);
+
+            player.Physical.OnBreach();
         }
 
         public bool WillDoorSwingTowardsPlayer(Door door, Vector3 playerPosition)
