@@ -16,8 +16,14 @@ namespace tarkin.doordash
 
         internal static ConfigEntry<float> DislodgeChance;
         internal static ConfigEntry<float> DislodgeForce;
-        internal static ConfigEntry<float> HitDamage;
-        
+
+        internal static ConfigEntry<float> ArmDamageBase;
+        internal static ConfigEntry<float> ContusionStrength;
+        internal static ConfigEntry<float> RecoilHands;
+        internal static ConfigEntry<float> RecoilCamera;
+        internal static ConfigEntry<bool> BurnStamina;
+        internal static ConfigEntry<EBodyPart> BodyPartToHurt;
+
         private void Awake()
         {
             Log = base.Logger;
@@ -42,7 +48,13 @@ namespace tarkin.doordash
 
             DislodgeChance = Config.Bind("Physical Door", "Chance To Dislodge On Breach", 0.01f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
             DislodgeForce = Config.Bind("Physical Door", "Dislodge Force", 10f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
-            HitDamage = Config.Bind("Physical Door", "Player Collision Damage", 100f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
+
+            ArmDamageBase = Config.Bind("Player Effect", "Arm Damage", 10f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
+            ContusionStrength = Config.Bind("Player Effect", "Contusion Strength", 0.5f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
+            RecoilHands = Config.Bind("Player Effect", "Recoil Hands", 2f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
+            RecoilCamera = Config.Bind("Player Effect", "Recoil Camera", 4f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
+            BurnStamina = Config.Bind("Player Effect", "Burn Stamina", true, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
+            BodyPartToHurt = Config.Bind("Player Effect", "BodyPartToHurt", EBodyPart.LeftArm, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
         }
     }
 }

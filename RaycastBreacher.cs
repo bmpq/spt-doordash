@@ -1,4 +1,5 @@
 ﻿using EFT;
+using EFT.Ballistics;
 using EFT.Interactive;
 using System.Collections.Generic;
 using UnityEngine;
@@ -74,9 +75,51 @@ namespace tarkin.doordash
             door.LockForInteraction();
             door.SetUser(player);
             door.Interact(new InteractionResult(EInteractionType.Breach));
-            player.ProceduralWeaponAnimation.ForceReact.AddForce(1, 4, 2);
 
-            player.Physical.OnBreach();
+            AffectPlayer(door);
+        }
+
+        void AffectPlayer(Door door)
+        {
+            player.ProceduralWeaponAnimation.ForceReact.AddForce(1, Plugin.RecoilHands.Value, Plugin.RecoilCamera.Value);
+
+            if (Plugin.BurnStamina.Value)
+                player.Physical.OnBreach();
+
+            var dmgInfo = new DamageInfoStruct { DamageType = EDamageType.Fall }; // EDamageType.Fall calls native logic for probability of fracture
+
+            MaterialType doorMat = GetDoorMaterialFromBreachSound(door.BreachSound.name);
+            float dmg = GetDamageFromDoorMaterial(doorMat);
+
+            player.ActiveHealthController.ApplyDamage(Plugin.BodyPartToHurt.Value, dmg, dmgInfo);
+            player.ActiveHealthController.DoContusion(Plugin.ContusionStrength.Value, 0.5f);
+        }
+
+        float GetDamageFromDoorMaterial(MaterialType mat)
+        {
+            float baseDamage = Plugin.ArmDamageBase.Value;
+
+            switch (mat)
+            {
+                case MaterialType.MetalThick:
+                    return baseDamage * 2f;
+                case MaterialType.Plastic:
+                case MaterialType.WoodThick:
+                default:
+                    return baseDamage;
+            }
+        }
+
+        MaterialType GetDoorMaterialFromBreachSound(string name)
+        {
+            if (name.Contains("wood"))
+                return MaterialType.WoodThick;
+            if (name.Contains("plastic"))
+                return MaterialType.Plastic;
+            if (name.Contains("grate") || name.Contains("metal"))
+                return MaterialType.MetalThick;
+
+            return MaterialType.None;
         }
 
         public bool WillDoorSwingTowardsPlayer(Door door, Vector3 playerPosition)

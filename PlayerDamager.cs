@@ -77,7 +77,7 @@ namespace tarkin.doordash
                 fakeHit.point = hitPoint;
                 fakeHit.normal = hitNormal;
                 float force = impulse.sqrMagnitude;
-                Hit(impulse.normalized, closestBodyPart, fakeHit, Plugin.HitDamage.Value * force);
+                Hit(impulse.normalized, closestBodyPart, fakeHit, force * 100f);
             }
         }
 
