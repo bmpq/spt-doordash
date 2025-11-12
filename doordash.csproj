@@ -4,15 +4,15 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>doordash</AssemblyName>
     <LangVersion>latest</LangVersion>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <Timestamp>$([System.DateTime]::Now.ToString('yyyyMMdd_HHmmss'))</Timestamp>
   </PropertyGroup>
 
   <PropertyGroup>
-    <SPTPath>E:\Games\SPT_3.11</SPTPath>
     <RootNamespace>tarkin.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
     <ModExportPath>$(SPTPath)\BepInEx\plugins\tarkin</ModExportPath>
-    <DistFilename>$(AssemblyName)-$(Version)</DistFilename>
+    <SPTVersionName>$([System.IO.Path]::GetFileName($(SPTPath)))</SPTVersionName>
+    <DistFilename>$(AssemblyName)_v$(Version)_$(SPTVersionName)</DistFilename>
     <DistPath>dist\$(DistFilename)\BepInEx\plugins\tarkin</DistPath>
   </PropertyGroup>
 
@@ -20,35 +20,19 @@
     <PackageReference Include="BepInEx.Core" Version="5.4.21" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" />
     <PackageReference Include="UnityEngine.Modules" Version="2022.3.43" IncludeAssets="compile" />
+    <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.23.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="spt-reflection">
-      <HintPath>$(SPTPath)\BepinEx\Plugins\spt\spt-reflection.dll</HintPath>
-    </Reference>
-    <Reference Include="spt-common">
-      <HintPath>$(SPTPath)\BepinEx\Plugins\spt\spt-common.dll</HintPath>
-    </Reference>
+    <Reference Include="$(SPTPath)\BepinEx\Plugins\spt\spt-reflection.dll" />
+    <Reference Include="$(SPTPath)\BepinEx\Plugins\spt\spt-common.dll" />
     
-    <Reference Include="Assembly-CSharp">
-      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-    </Reference>
-
-    <Reference Include="Comfort">
-      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\Comfort.dll</HintPath>
-    </Reference>
-    <Reference Include="Comfort.Unity">
-      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\Comfort.Unity.dll</HintPath>
-    </Reference>
-    <Reference Include="CommonExtensions">
-      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\managed\CommonExtensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Sirenix.Serialization">
-      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\managed\Sirenix.Serialization.dll</HintPath>
-    </Reference>
+    <Reference Include="$(SPTPath)\EscapeFromTarkov_Data\Managed\Assembly-CSharp.dll" />
+    <Reference Include="$(SPTPath)\EscapeFromTarkov_Data\Managed\Assembly-CSharp-firstpass.dll" />
+    <Reference Include="$(SPTPath)\EscapeFromTarkov_Data\Managed\Comfort.dll" />
+    <Reference Include="$(SPTPath)\EscapeFromTarkov_Data\Managed\Comfort.Unity.dll" />
+    <Reference Include="$(SPTPath)\EscapeFromTarkov_Data\Managed\CommonExtensions.dll" />
+    <Reference Include="$(SPTPath)\EscapeFromTarkov_Data\Managed\Sirenix.Serialization.dll" />
   </ItemGroup>
 
   <Target Name="CopyDllAfterBuild" AfterTargets="Build">
