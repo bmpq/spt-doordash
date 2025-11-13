@@ -50,12 +50,17 @@ namespace tarkin.doordash
                 Door door = hit.collider.transform.parent?.GetComponent<Door>();
 
                 if (door == null)
+                {
                     door = hit.collider.transform.parent?.parent?.GetComponent<Door>(); // some doors have deeper colliders
+                    if (door == null)
+                        return null;
+                }
 
-                if (door == null)
-                    return null;
+                bool isStateBreachable = 
+                    (door.DoorState == EDoorState.Shut) ||
+                    (door.DoorState == EDoorState.Locked && Plugin.BreachLocked.Value);
 
-                if (door.DoorState != EDoorState.Shut) // excludes locked
+                if (!isStateBreachable)
                     return null;
 
                 if (!door.Operatable)
@@ -72,14 +77,16 @@ namespace tarkin.doordash
 
         void RamDoor(Door door)
         {
+            bool wasLocked = door.DoorState == EDoorState.Locked;
+
             door.LockForInteraction();
             door.SetUser(player);
             door.Interact(new InteractionResult(EInteractionType.Breach));
 
-            AffectPlayer(door);
+            AffectPlayer(door, wasLocked);
         }
 
-        void AffectPlayer(Door door)
+        void AffectPlayer(Door door, bool wasLocked)
         {
             player.ProceduralWeaponAnimation.ForceReact.AddForce(1, Plugin.RecoilHands.Value, Plugin.RecoilCamera.Value);
 
@@ -90,6 +97,9 @@ namespace tarkin.doordash
 
             MaterialType doorMat = GetDoorMaterialFromBreachSound(door.BreachSound.name);
             float dmg = GetDamageFromDoorMaterial(doorMat);
+
+            if (wasLocked)
+                dmg *= Plugin.LockedBreachDamageMultiplier.Value;
 
             player.ActiveHealthController.ApplyDamage(Plugin.BodyPartToHurt.Value, dmg, dmgInfo);
             player.ActiveHealthController.DoContusion(Plugin.ContusionTime.Value, Plugin.ContusionStrength.Value);
