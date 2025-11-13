@@ -18,6 +18,7 @@ namespace tarkin.doordash
         internal static ConfigEntry<float> DislodgeForce;
 
         internal static ConfigEntry<float> ArmDamageBase;
+        internal static ConfigEntry<float> ContusionTime;
         internal static ConfigEntry<float> ContusionStrength;
         internal static ConfigEntry<float> RecoilHands;
         internal static ConfigEntry<float> RecoilCamera;
@@ -50,6 +51,7 @@ namespace tarkin.doordash
             DislodgeForce = Config.Bind("Physical Door", "Dislodge Force", 10f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
 
             ArmDamageBase = Config.Bind("Player Effect", "Arm Damage", 10f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
+            ContusionTime = Config.Bind("Player Effect", "Contusion Time", 0.5f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
             ContusionStrength = Config.Bind("Player Effect", "Contusion Strength", 0.5f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
             RecoilHands = Config.Bind("Player Effect", "Recoil Hands", 2f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));
             RecoilCamera = Config.Bind("Player Effect", "Recoil Camera", 4f, new ConfigDescription("", null, new ConfigurationManagerAttributes { IsAdvanced = true }));

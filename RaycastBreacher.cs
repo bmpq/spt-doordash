@@ -92,7 +92,7 @@ namespace tarkin.doordash
             float dmg = GetDamageFromDoorMaterial(doorMat);
 
             player.ActiveHealthController.ApplyDamage(Plugin.BodyPartToHurt.Value, dmg, dmgInfo);
-            player.ActiveHealthController.DoContusion(Plugin.ContusionStrength.Value, 0.5f);
+            player.ActiveHealthController.DoContusion(Plugin.ContusionTime.Value, Plugin.ContusionStrength.Value);
         }
 
         float GetDamageFromDoorMaterial(MaterialType mat)
