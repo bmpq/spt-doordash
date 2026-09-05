@@ -20,7 +20,7 @@ namespace tarkin.doordash
             if (self == null || self.velocity.sqrMagnitude < 0.5f)
                 return;
 
-            if (other.gameObject.layer == LayerMaskClass.PlayerLayer)
+            if (other.gameObject.layer == LayersMaskController.PlayerLayer)
             {
                 if (other.gameObject.TryGetComponent<Player>(out Player hitReceiver) && !hitReceiver.IsYourPlayer)
                 {
@@ -41,7 +41,7 @@ namespace tarkin.doordash
             Vector3 hitPoint = contact.point;
             Vector3 hitNormal = contact.normal;
 
-            if (collision.gameObject.layer == LayerMaskClass.PlayerLayer)
+            if (collision.gameObject.layer == LayersMaskController.PlayerLayer)
             {
                 if (collision.gameObject.TryGetComponent<Player>(out Player hitReceiver) && !hitReceiver.IsYourPlayer)
                 {
@@ -91,7 +91,7 @@ namespace tarkin.doordash
 
             var mainPlayerBridge = Singleton<GameWorld>.Instance?.GetAlivePlayerBridgeByProfileID(Singleton<GameWorld>.Instance?.MainPlayer?.ProfileId);
 
-            DamageInfoStruct damageInfo = new DamageInfoStruct
+            DamageInfo damageInfo = new DamageInfo
             {
                 DamageType = EDamageType.Btr,
                 Damage = dmg,
@@ -110,7 +110,7 @@ namespace tarkin.doordash
                 DeflectedBy = null
             };
 
-            ballisticCollider.ApplyHit(damageInfo, ShotIdStruct.EMPTY_SHOT_ID);
+            ballisticCollider.ApplyHit(damageInfo, ShotId.EMPTY_SHOT_ID);
 
             Singleton<Effects>.Instance?.Emit(ballisticCollider.TypeOfMaterial, ballisticCollider, hit.point, hit.normal, 1f);
         }

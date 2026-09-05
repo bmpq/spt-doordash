@@ -44,7 +44,7 @@ namespace tarkin.doordash
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
             originalLayer = gameObject.layer;
-            gameObject.layer = LayerMaskClass.LowPolyColliderLayer;
+            gameObject.layer = LayersMaskController.LowPolyColliderLayer;
 
             box = gameObject.AddComponent<BoxCollider>();
             box.enabled = true;

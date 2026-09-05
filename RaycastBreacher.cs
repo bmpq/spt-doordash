@@ -45,7 +45,7 @@ namespace tarkin.doordash
             Vector3 rayOrigin = transform.position + offsetFromFloor;
             Vector3 rayDirection = transform.forward;
 
-            if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hit, Plugin.RayDistance.Value, LayerMaskClass.PlayerStaticDoorMask))
+            if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hit, Plugin.RayDistance.Value, LayersMaskController.PlayerStaticDoorMask))
             {
                 Door door = hit.collider.transform.parent?.GetComponent<Door>();
 
@@ -93,7 +93,7 @@ namespace tarkin.doordash
             if (Plugin.BurnStamina.Value)
                 player.Physical.OnBreach();
 
-            var dmgInfo = new DamageInfoStruct { DamageType = EDamageType.Fall }; // EDamageType.Fall calls native logic for probability of fracture
+            var dmgInfo = new DamageInfo { DamageType = EDamageType.Fall }; // EDamageType.Fall calls native logic for probability of fracture
 
             MaterialType doorMat = GetDoorMaterialFromBreachSound(door.BreachSound.name);
             float dmg = GetDamageFromDoorMaterial(doorMat);

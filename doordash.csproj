@@ -2,18 +2,18 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyName>doordash</AssemblyName>
+    <AssemblyName>tarkin.doordash</AssemblyName>
     <LangVersion>latest</LangVersion>
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
     <Timestamp>$([System.DateTime]::Now.ToString('yyyyMMdd_HHmmss'))</Timestamp>
   </PropertyGroup>
 
   <PropertyGroup>
     <RootNamespace>tarkin.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-    <ModExportPath>$(SPTPath)\BepInEx\plugins\tarkin</ModExportPath>
+    <ModExportPath>$(SPTPath)\BepInEx\plugins</ModExportPath>
     <SPTVersionName>$([System.IO.Path]::GetFileName($(SPTPath)))</SPTVersionName>
     <DistFilename>$(AssemblyName)_v$(Version)_$(SPTVersionName)</DistFilename>
-    <DistPath>dist\$(DistFilename)\BepInEx\plugins\tarkin</DistPath>
+    <DistPath>dist\$(DistFilename)\BepInEx\plugins</DistPath>
   </PropertyGroup>
 
   <ItemGroup>
