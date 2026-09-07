@@ -31,6 +31,8 @@ bld/
 [Ll]og/
 [Ll]ogs/
 dist/
+.[Bb]in/
+.[Oo]bj/
 
 # for assemblies
 References/

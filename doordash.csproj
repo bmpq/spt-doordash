@@ -5,15 +5,7 @@
     <AssemblyName>tarkin.doordash</AssemblyName>
     <LangVersion>latest</LangVersion>
     <Version>1.1.2</Version>
-    <Timestamp>$([System.DateTime]::Now.ToString('yyyyMMdd_HHmmss'))</Timestamp>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <RootNamespace>tarkin.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-    <ModExportPath>$(SPTPath)\BepInEx\plugins</ModExportPath>
-    <SPTVersionName>$([System.IO.Path]::GetFileName($(SPTPath)))</SPTVersionName>
-    <DistFilename>$(AssemblyName)_v$(Version)_$(SPTVersionName)</DistFilename>
-    <DistPath>dist\$(DistFilename)\BepInEx\plugins</DistPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,9 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(SPTPath)\BepinEx\Plugins\spt\spt-reflection.dll" />
-    <Reference Include="$(SPTPath)\BepinEx\Plugins\spt\spt-common.dll" />
-    
+    <Reference Include="$(SPTPath)\BepInEx\Plugins\spt\spt-reflection.dll" />
+    <Reference Include="$(SPTPath)\BepInEx\Plugins\spt\spt-common.dll" />
+
     <Reference Include="$(SPTPath)\EscapeFromTarkov_Data\Managed\Assembly-CSharp.dll" />
     <Reference Include="$(SPTPath)\EscapeFromTarkov_Data\Managed\Assembly-CSharp-firstpass.dll" />
     <Reference Include="$(SPTPath)\EscapeFromTarkov_Data\Managed\Comfort.dll" />
@@ -35,18 +27,41 @@
     <Reference Include="$(SPTPath)\EscapeFromTarkov_Data\Managed\Sirenix.Serialization.dll" />
   </ItemGroup>
 
-  <Target Name="CopyDllAfterBuild" AfterTargets="Build">
-    <ItemGroup>
-      <DeployFiles Include="$(OutputPath)$(AssemblyName).dll" />
-    </ItemGroup>
-    <Copy SourceFiles="@(DeployFiles)" DestinationFolder="$(ModExportPath)" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="@(DeployFiles)" DestinationFolder="$(DistPath)" SkipUnchangedFiles="true" />
+
+  <!-- DEBUG: Deploy to BepInEx/scripts -->
+  <Target Name="PostBuildDebug" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
+    <!-- Delete old dll from plugins -->
+    <Delete Files="$(SPTPath)\BepInEx\plugins\$(TargetFileName)" />
+
+    <!-- Copy new output dll and pdb to scripts -->
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SPTPath)\BepInEx\scripts\" />
+    <Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="$(SPTPath)\BepInEx\scripts\" />
   </Target>
 
-  <Target Name="Zip" AfterTargets="Build">
-    <ItemGroup>
-      <ZipFiles Include="dist\$(DistFilename)\BepInEx" />
-    </ItemGroup>
-    <Exec Command="PowerShell -command Compress-Archive @(ZipFiles, ',') dist\$(DistFilename)_$(Timestamp).zip" />
+  <!-- RELEASE: Deploy to BepInEx/plugins and create release zip -->
+  <Target Name="PostBuildRelease" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <PropertyGroup>
+      <StagingDir>$(IntermediateOutputPath)zip_staging\</StagingDir>
+      <ZipOutputFile>$(ProjectDir)\dist\$(TargetName)-v$(Version).zip</ZipOutputFile>
+    </PropertyGroup>
+
+    <!-- Delete old dll and pdb from scripts -->
+    <Delete Files="$(SPTPath)\BepInEx\scripts\$(TargetFileName)" />
+    <Delete Files="$(SPTPath)\BepInEx\scripts\$(TargetName).pdb" />
+
+    <!-- Copy new output dll to plugins -->
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SPTPath)\BepInEx\plugins\" />
+
+    <!-- Stage folder structure for the zip archive -->
+    <RemoveDir Directories="$(StagingDir)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(StagingDir)BepInEx\plugins\" />
+
+    <!-- Create release zip in projectroot\dist\ -->
+    <Delete Files="$(ZipOutputFile)" />
+    <ZipDirectory SourceDirectory="$(StagingDir)" DestinationFile="$(ZipOutputFile)" Overwrite="true" />
+
+    <!-- Cleanup staging directory -->
+    <RemoveDir Directories="$(StagingDir)" />
   </Target>
+
 </Project>
