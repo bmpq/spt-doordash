@@ -1,6 +1,9 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using Comfort.Common;
+using EFT;
+using SPT.Reflection.Patching;
 using tarkin.doordash.Patches;
 
 namespace tarkin.doordash
@@ -29,19 +32,48 @@ namespace tarkin.doordash
         internal static ConfigEntry<bool> BurnStamina;
         internal static ConfigEntry<EBodyPart> BodyPartToHurt;
 
-        private void Awake()
+        private PatchManager _patchManager;
+
+        private RaycastBreacher _instance;
+
+        private void Start()
         {
             Log = base.Logger;
 
+            _patchManager = new PatchManager(this, autoPatch: true);
+            _patchManager.EnablePatches();
+
             InitConfiguration();
 
-            new Patch_Door_KickOpen().Enable();
-
-            new Patch_GameWorld_OnGameStarted().Enable();
-            Patch_GameWorld_OnGameStarted.OnPostfix += (gameWorld) =>
+            Patch_GameWorld_OnGameStarted.OnPostfix += AddRaycastBreacherToMainPlayer;
+            if (Singleton<AbstractGame>.Instantiated)
             {
-                gameWorld.MainPlayer.gameObject.GetOrAddComponent<RaycastBreacher>();
-            };
+                AddRaycastBreacherToMainPlayer(Singleton<GameWorld>.Instance);
+
+#if DEBUG
+                Singleton<GameWorld>.Instance.MainPlayer.ActiveHealthController.ChangeHydration(100f);
+                Singleton<GameWorld>.Instance.MainPlayer.ActiveHealthController.ChangeEnergy(100f);
+#endif
+            }
+        }
+
+        void AddRaycastBreacherToMainPlayer(GameWorld gameWorld)
+        {
+            if (gameWorld.MainPlayer != null)
+            {
+                _instance = gameWorld.MainPlayer.gameObject.GetOrAddComponent<RaycastBreacher>();
+            }
+        }
+
+        void OnDestroy()
+        {
+            if (_instance != null)
+                Destroy(_instance);
+
+            Patch_GameWorld_OnGameStarted.OnPostfix -= AddRaycastBreacherToMainPlayer;
+
+            _patchManager.DisablePatches();
+            _patchManager = null;
         }
 
         private void InitConfiguration()
