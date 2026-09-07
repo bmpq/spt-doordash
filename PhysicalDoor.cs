@@ -111,6 +111,8 @@ namespace tarkin.doordash
             trigger.isTrigger = true;
             colListener = colDamager.AddComponent<PlayerDamager>();
 
+            PhysicsExtensions.UpdateController.SupportRigidbody(rb, 0f);
+
             PlayBreachSound();
         }
 

@@ -6,12 +6,11 @@ using UnityEngine;
 
 namespace tarkin.doordash
 {
-    [RequireComponent(typeof(Player))]
     public class RaycastBreacher : MonoBehaviour
     {
         Player player;
 
-        void Start()
+        void Awake()
         {
             player = GetComponent<Player>();
         }
@@ -20,6 +19,12 @@ namespace tarkin.doordash
         {
             if (!Plugin.Enabled.Value)
                 return;
+
+            if (player == null || (player.HealthController == null || !player.HealthController.IsAlive))
+            {
+                Destroy(this);
+                return;
+            }
 
             CheckForRam();
         }
@@ -34,16 +39,14 @@ namespace tarkin.doordash
                 return;
 
             Door door = GetBreachableDoorInFrontOfPlayer(new Vector3(0.1f, 1.4f, 0f));
-            if (door == null)
-                door = GetBreachableDoorInFrontOfPlayer(new Vector3(-0.1f, 1.4f, 0f));
             if (door != null)
                 RamDoor(door);
         }
 
-        Door GetBreachableDoorInFrontOfPlayer(Vector3 offsetFromFloor)
+        Door GetBreachableDoorInFrontOfPlayer(Vector3 offsetFromPlayerFloor)
         {
-            Vector3 rayOrigin = transform.position + offsetFromFloor;
-            Vector3 rayDirection = transform.forward;
+            Vector3 rayOrigin = player.Position + player.Transform.Original.TransformDirection(offsetFromPlayerFloor);
+            Vector3 rayDirection = player.Transform.Original.forward;
 
             if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hit, Plugin.RayDistance.Value, LayersMaskController.PlayerStaticDoorMask))
             {
@@ -105,7 +108,7 @@ namespace tarkin.doordash
             player.ActiveHealthController.DoContusion(Plugin.ContusionTime.Value, Plugin.ContusionStrength.Value);
         }
 
-        float GetDamageFromDoorMaterial(MaterialType mat)
+        private static float GetDamageFromDoorMaterial(MaterialType mat)
         {
             float baseDamage = Plugin.ArmDamageBase.Value;
 
@@ -120,7 +123,7 @@ namespace tarkin.doordash
             }
         }
 
-        MaterialType GetDoorMaterialFromBreachSound(string name)
+        private static MaterialType GetDoorMaterialFromBreachSound(string name)
         {
             if (name.Contains("wood"))
                 return MaterialType.WoodThick;
@@ -132,26 +135,21 @@ namespace tarkin.doordash
             return MaterialType.None;
         }
 
-        public bool WillDoorSwingTowardsPlayer(Door door, Vector3 playerPosition)
+        private static bool WillDoorSwingTowardsPlayer(Door door, Vector3 targetPosition)
         {
-            Vector3 doorHingePos = door.transform.position;
+            Vector3 doorPoint = door.transform.TransformPoint(door.viewTarget1);
+            Vector2 toTarget = new Vector2(targetPosition.x - doorPoint.x, targetPosition.z - doorPoint.z);
 
-            Vector3 shutNormal = door.GetDoorRotation(door.GetAngle(EDoorState.Shut))
-                               * WorldInteractiveObject.GetRotationAxis(door.DoorForward, door.transform);
+            Vector3 shutForward = door.GetDoorRotation(door.GetAngle(EDoorState.Shut))
+                                  * WorldInteractiveObject.GetRotationAxis(door.DoorForward, door.transform);
 
-            Vector3 openNormal = door.GetDoorRotation(door.GetAngle(EDoorState.Open))
-                               * WorldInteractiveObject.GetRotationAxis(door.DoorForward, door.transform);
+            Vector3 openForward = door.GetDoorRotation(door.GetAngle(EDoorState.Open))
+                                 * WorldInteractiveObject.GetRotationAxis(door.DoorForward, door.transform);
 
-            Vector3 swingDirection = shutNormal + openNormal;
-            Vector3 doorToPlayer = playerPosition - doorHingePos;
+            Vector3 swingBisector = shutForward + openForward;
+            Vector2 swingDir2D = new Vector2(swingBisector.x, swingBisector.z);
 
-            Vector2 swingDirection2D = new Vector2(swingDirection.x, swingDirection.z).normalized;
-            Vector2 doorToPlayer2D = new Vector2(doorToPlayer.x, doorToPlayer.z).normalized;
-
-            float dotProduct = Vector2.Dot(doorToPlayer2D, swingDirection2D);
-            bool swingsTowardsPlayer = dotProduct > 0f;
-
-            return swingsTowardsPlayer;
+            return Vector2.Dot(toTarget.normalized, swingDir2D.normalized) > 0f;
         }
     }
 }
